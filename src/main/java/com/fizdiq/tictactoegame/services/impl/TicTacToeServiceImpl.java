@@ -81,14 +81,6 @@ public class TicTacToeServiceImpl implements TicTacToeService {
         boolean singlePlayer = game.isSinglePlayer();
         String player2Symbol = game.getPlayer2Symbol();
 
-//        if (!player.equals(player1Symbol) &&
-//                (!singlePlayer || !player.equals(player2Symbol))) {
-//            String errorMessage = "Invalid symbol used! Allowed symbols: " + player1Symbol
-//                    + (game.isSinglePlayer() ? ", " + game.getPlayer2Symbol() : "");
-//            log.error(errorMessage);
-//            return errorMessage;
-//        }
-
         if (boardArray[row][col] != null) {
             String errorMessage = "Cell is already occupied";
             log.error(errorMessage);
@@ -140,6 +132,11 @@ public class TicTacToeServiceImpl implements TicTacToeService {
     public Game getGame(Long gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new RuntimeException("Game with ID: " + gameId + " not found"));
+    }
+
+    @Override
+    public List<Game> getGamesOrdered() {
+        return gameRepository.findByOrderByIsGameOverAscIdAsc();
     }
 
     private boolean checkWin(Game game, PlayerMove playerMove) {

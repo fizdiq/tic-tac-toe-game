@@ -3,12 +3,12 @@ package com.fizdiq.tictactoegame.viewmodels;
 import com.fizdiq.tictactoegame.dto.request.PlayerMove;
 import com.fizdiq.tictactoegame.model.Game;
 import com.fizdiq.tictactoegame.services.TicTacToeService;
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.*;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +41,6 @@ public class GameBoardView extends VerticalLayout implements HasUrlParameter<Lon
     }
 
     private void initializeGameBoard() {
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
 
         add(new NativeLabel("Game ID: " + currentGame.getId()));
 
@@ -53,131 +50,55 @@ public class GameBoardView extends VerticalLayout implements HasUrlParameter<Lon
 
         int boardSize = currentGame.getBoardSize();
 
-//        Div gridContainer = new Div();
-//        gridContainer.getStyle()
-//                .set("display", "flex")
-//                .set("align-items", "center")
-//                .set("justify-content", "center")
-//                .set("width", "100%")
-//                .set("height", "100%")
-//                .set("max-width", "600px")
-//                .set("max-height", "600px")
-//                .set("padding", "20px")
-//                .set("box-sizing", "border-box");
-
-
-
         grid = new Grid<>();
-        grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS, GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.removeAllHeaderRows();
         grid.setAllRowsVisible(true);
         grid.setSelectionMode(Grid.SelectionMode.NONE);
         grid.getStyle().setTextAlign(Style.TextAlign.CENTER);
         grid.setAllRowsVisible(true);
-//        grid.setHeightFull();
 
-//        grid.setSizeFull();
-//        grid.getStyle()
-//                .set("width", "100%")
-//                .set("height", "100%")
-//                .set("margin", "0")
-//                .set("box-sizing", "border-box");
-//        grid.getStyle()
-//                .set("grid-template-columns", "repeat(" + boardSize + ", 1fr)")
-//                .set("grid-template-rows", "repeat(" + boardSize + ", 1fr)");
-//        grid.getElement().getStyle()
-//                .set("--vaadin-grid-row-height", "50px");
+        int size = 600 / boardSize;
+        String player1Symbol = currentGame.getPlayer1Symbol();
+        String player2Symbol = currentGame.getPlayer2Symbol();
+        String player1Color = "green";
+        String player2Color = "red";
 
         IntStream.range(0, boardSize).forEach(col ->
-                grid.addColumn(row -> row[col] == null ? "" : row[col])
-                        .setHeader("")
-                        .setKey(String.valueOf(col))
-                        .setFlexGrow(1)
-                        .setResizable(false)
-                        .setAutoWidth(true));
+                grid.addColumn(new ComponentRenderer<>(row -> {
+                    String cellValue = row[col] == null ? "" : row[col];
 
+                    Button cellButton = new Button(cellValue);
+                    cellButton.setWidth(size + "px");
+                    cellButton.setHeight(size + "px");
+                    cellButton.setEnabled(cellValue.isEmpty());
 
-        grid.addItemClickListener(event -> {
-            String[] row = event.getItem();
-            int rowIndex = grid.getGenericDataView().getItems().toList().indexOf(row);
-            int colIndex = event.getColumn().getKey() == null ? -1 : Integer.parseInt(event.getColumn().getKey());
-            handlePlayerMove(rowIndex, colIndex);
-        });
+                    if (cellValue.equals(player1Symbol)) {
+                        cellButton.getStyle().set("background-color", player1Color);
+                        cellButton.getStyle().set("color", "white");
+                    } else if (cellValue.equals(player2Symbol)) {
+                        cellButton.getStyle().set("background-color", player2Color);
+                        cellButton.getStyle().set("color", "white");
+                    }
+
+                    cellButton.addClickListener(click -> {
+                        int rowIndex = grid.getGenericDataView().getItems().toList().indexOf(row);
+                        handlePlayerMove(rowIndex, col);
+                    });
+                    return cellButton;
+                }))
+        .setHeader("")
+        .setKey(String.valueOf(col))
+        .setFlexGrow(0)
+        .setResizable(false)
+        .setAutoWidth(true));
 
         refreshBoard();
-//        gridContainer.add(grid);
-//        add(gameStatus, gridContainer);
-        add(gameStatus, grid);
 
-//        boardDiv = new Div();
-//        boardDiv.getStyle()
-//                .set("display", "grid")
-//                .set("grid-template-columns", "repeat(" + boardSize + ", 1fr)")
-//                .set("grid-gap", "10px")
-//                .set("width", "50%");
+        Button homeButton = new Button("Home", click -> getUI().ifPresent(ui -> ui.navigate("")));
 
-//        String[][] boardArray = currentGame.getBoardArray();
-//
-//        for (int row = 0; row < boardArray.length; row++) {
-//            for (int col = 0; col < boardArray[row].length; col++) {
-//                Button cellButton = new Button();
-//                int finalRow = row;
-//                int finalCol = col;
-//
-//                if (boardArray[row][col] != null) {
-//                    cellButton.setText(boardArray[row][col]);
-//                    cellButton.setEnabled(false);
-//                }
-//
-//                cellButton.addClickListener(click -> handlePlayerMove(finalRow, finalCol, gameStatus, cellButton));
-//                boardDiv.add(cellButton);
-//            }
-//        }
-//        add(gameStatus, boardDiv);
+        add(gameStatus, grid, homeButton);
     }
-
-//    private void handlePlayerMove(int row, int col, NativeLabel gameStatus, Button cellButton) {
-//        boolean gameOver = currentGame.isGameOver();
-//
-//        if (gameOver) {
-//            updateGameStatus(gameStatus);
-//            return;
-//        }
-//
-//        String currentPlayer = getCurrentPlayerSymbol();
-//
-//        PlayerMove playerMove = new PlayerMove(row, col, currentPlayer);
-//        Long gameId = currentGame.getId();
-//        String moveResult = ticTacToeService.makeMove(gameId, playerMove);
-//
-//        refreshBoard();
-//        refreshGameState();
-//
-//        if (gameOver) {
-//            updateGameStatus(gameStatus);
-//            return;
-//        } else {
-//            gameStatus.setText("Game Status: " + moveResult);
-//        }
-//
-//
-//        cellButton.setText(currentPlayer);
-//        cellButton.setEnabled(false);
-//
-//        boolean singlePlayer = currentGame.isSinglePlayer();
-//        boolean player2Computer = currentGame.isPlayer2Computer();
-//        String player2Symbol = currentGame.getPlayer2Symbol();
-////        if (!gameOver && singlePlayer && player2Computer) {
-////            String aiMoveResult = ticTacToeService.makeMove(gameId,
-////                    new PlayerMove(-1, -1, player2Symbol));
-////            refreshBoard();
-////            refreshGameState();
-////            gameStatus.setText("Game Status: " + aiMoveResult);
-////        }
-//        refreshBoard();
-//        refreshGameState();
-//        updateGameStatus(gameStatus);
-//    }
 
     private void handlePlayerMove(int row, int col) {
         if (currentGame.isGameOver()) {
@@ -250,8 +171,6 @@ public class GameBoardView extends VerticalLayout implements HasUrlParameter<Lon
 
     private void refreshGameState() {
         currentGame = ticTacToeService.getGame(currentGame.getId());
-//        initializeGameBoard();
-//        UI.getCurrent().refreshCurrentRoute(false);
     }
 
     private void refreshBoard() {

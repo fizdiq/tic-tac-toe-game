@@ -5,6 +5,7 @@ import com.fizdiq.tictactoegame.services.TicTacToeService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
@@ -69,6 +70,10 @@ public class GameConfigView extends VerticalLayout {
             }
         });
 
-        add(boardSizeField, winStreakField, player1SymbolField, player2SymbolField, singlePlayerCheckbox, startGameButton);
+        Button homeButton = new Button("Home", click -> getUI().ifPresent(ui -> ui.navigate("")));
+
+        HorizontalLayout buttonLayout = new HorizontalLayout(startGameButton, homeButton);
+
+        add(boardSizeField, winStreakField, player1SymbolField, player2SymbolField, singlePlayerCheckbox, buttonLayout);
     }
 }
