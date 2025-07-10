@@ -19,7 +19,16 @@ public class Game {
     private String board;
 
     private boolean isGameOver = false;
+
     private String winner = null;
+
+    private boolean isSinglePlayer = true;
+
+    private String player1Symbol;
+
+    private String player2Symbol;
+
+    private boolean isPlayer2Computer = true;
 
     public String[][] getBoardArray() {
         if (board == null || board.isEmpty()) {
