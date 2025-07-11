@@ -139,6 +139,12 @@ public class TicTacToeServiceImpl implements TicTacToeService {
         return gameRepository.findByOrderByIsGameOverAscIdAsc();
     }
 
+    @Override
+    public void deleteGame(Long gameId) {
+        gameRepository.deleteById(gameId);
+        log.info("Game with ID: {} deleted", gameId);
+    }
+
     private boolean checkWin(Game game, PlayerMove playerMove) {
         int streak = game.getWinStreak();
         String[][] boardArray = game.getBoardArray();

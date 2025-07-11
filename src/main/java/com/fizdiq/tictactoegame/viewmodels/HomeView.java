@@ -5,10 +5,13 @@ import com.fizdiq.tictactoegame.model.Game;
 import com.fizdiq.tictactoegame.services.TicTacToeService;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -40,6 +43,7 @@ public class HomeView extends VerticalLayout implements BeforeEnterObserver {
         });
         newGameButton.getStyle().set("margin-bottom", "20px");
 
+        NativeLabel helperText = new NativeLabel("Click on a game row to go to its game board view.");
         gamesGrid = new Grid<>(Game.class, false);
         gamesGrid.addColumn(Game::getId).setHeader("Game ID").setAutoWidth(true).setResizable(false);
         gamesGrid.addColumn(Game::getBoardSize)
@@ -97,6 +101,31 @@ public class HomeView extends VerticalLayout implements BeforeEnterObserver {
                 .setHeader("Updated Date")
                 .setAutoWidth(true)
                 .setResizable(false);
+        gamesGrid.addComponentColumn(game -> {
+            Button deleteButton = new Button("Delete", VaadinIcon.TRASH.create());
+            deleteButton.getStyle().set("color", "red");
+
+            deleteButton.addClickListener(click -> {
+                ConfirmDialog confirmDialog = new ConfirmDialog();
+                confirmDialog.setConfirmButtonTheme("error primary");
+                confirmDialog.setCancelButtonTheme("tertiary");
+                confirmDialog.setCancelable(true);
+                confirmDialog.setHeader("Delete Game " + game.getId() + " Confirmation");
+                confirmDialog.setText("Are you sure you want to delete this game?");
+                confirmDialog.setConfirmText("Delete");
+                confirmDialog.setCancelText("Cancel");
+
+                confirmDialog.addConfirmListener(event -> {
+                    ticTacToeService.deleteGame(game.getId());
+                    refreshGrid();
+                    Notification.show("Game " + game.getId() + " deleted successfully");
+                });
+
+                confirmDialog.open();
+            });
+            return deleteButton;
+        }).setHeader("Actions").setAutoWidth(true).setResizable(false);
+
         gamesGrid.setEmptyStateText("No games found. Start a new game to see it here");
 
         Div gridContainer = new Div(gamesGrid);
@@ -106,13 +135,15 @@ public class HomeView extends VerticalLayout implements BeforeEnterObserver {
 
         List<Game> games = ticTacToeService.getGamesOrdered();
         gamesGrid.setItems(games);
+        gamesGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+
 
         gamesGrid.addItemClickListener(event -> {
             Long gameId = event.getItem().getId();
             getUI().ifPresent(ui -> ui.navigate("game/" + gameId));
         });
 
-        add(newGameButton, gridContainer);
+        add(newGameButton, helperText, gridContainer);
     }
 
     @Override

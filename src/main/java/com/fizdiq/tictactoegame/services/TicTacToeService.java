@@ -12,4 +12,5 @@ public interface TicTacToeService {
     String makeMove(Long gameId, PlayerMove playerMove);
     Game getGame(Long gameId);
     List<Game> getGamesOrdered();
+    void deleteGame(Long gameId);
 }

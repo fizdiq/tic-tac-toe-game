@@ -22,10 +22,11 @@ public class GameConfigView extends VerticalLayout {
         IntegerField boardSizeField = new IntegerField("Board Size (e.g., 3 for 3x3)");
         boardSizeField.setRequiredIndicatorVisible(true);
         boardSizeField.setI18n(new IntegerField.IntegerFieldI18n().setRequiredErrorMessage("Board size is required!")
-                .setBadInputErrorMessage("Invalid number format"));
+                .setBadInputErrorMessage("Invalid number format").setMinErrorMessage("Board size must be >= 3"));
         boardSizeField.setPlaceholder("Enter size... (e.g., 3 for 3x3)");
         boardSizeField.setWidth("30%");
         boardSizeField.setClearButtonVisible(true);
+        boardSizeField.setMin(3);
 
         IntegerField winStreakField = new IntegerField("Win Streak (e.g., 3 for three in a row)");
         winStreakField.setRequiredIndicatorVisible(true);

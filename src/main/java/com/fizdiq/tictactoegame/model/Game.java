@@ -3,12 +3,17 @@ package com.fizdiq.tictactoegame.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Data
+@SQLDelete(sql = "UPDATE game SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+@Table(name = "game")
 public class Game {
 
     @Id
@@ -39,6 +44,8 @@ public class Game {
 
     @UpdateTimestamp
     private LocalDateTime updatedDate;
+
+    boolean isDeleted = false;
 
     public String[][] getBoardArray() {
         if (board == null || board.isEmpty()) {
