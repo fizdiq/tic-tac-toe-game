@@ -24,7 +24,6 @@ public class GameBoardView extends VerticalLayout implements HasUrlParameter<Lon
     private TicTacToeService ticTacToeService;
 
     private Game currentGame;
-//    private Div boardDiv;
     private Grid<String[]> grid;
     private NativeLabel gameStatus;
 

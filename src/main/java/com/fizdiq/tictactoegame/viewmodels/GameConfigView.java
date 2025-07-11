@@ -7,6 +7,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,33 +19,52 @@ public class GameConfigView extends VerticalLayout {
     private TicTacToeService ticTacToeService;
 
     public GameConfigView() {
-        TextField boardSizeField = new TextField("Board Size (e.g., 3 for 3x3)");
-        boardSizeField.setRequired(true);
+        IntegerField boardSizeField = new IntegerField("Board Size (e.g., 3 for 3x3)");
+        boardSizeField.setRequiredIndicatorVisible(true);
+        boardSizeField.setI18n(new IntegerField.IntegerFieldI18n().setRequiredErrorMessage("Board size is required!")
+                .setBadInputErrorMessage("Invalid number format"));
         boardSizeField.setPlaceholder("Enter size... (e.g., 3 for 3x3)");
-        boardSizeField.setValue("3");
+        boardSizeField.setWidth("30%");
+        boardSizeField.setClearButtonVisible(true);
 
-        TextField winStreakField = new TextField("Win Streak (e.g., 3 for three in a row)");
-        winStreakField.setRequired(true);
+        IntegerField winStreakField = new IntegerField("Win Streak (e.g., 3 for three in a row)");
+        winStreakField.setRequiredIndicatorVisible(true);
+        winStreakField.setI18n(new IntegerField.IntegerFieldI18n().setRequiredErrorMessage("Win streak is required!")
+                .setBadInputErrorMessage("Invalid number format"));
         winStreakField.setPlaceholder("Enter win streak... (e.g., 3 for three in a row)");
-        winStreakField.setValue("3");
+        winStreakField.setWidth("30%");
+        winStreakField.setClearButtonVisible(true);
 
         TextField player1SymbolField = new TextField("First Player Symbol (e.g., X)");
-        player1SymbolField.setRequired(true);
+        player1SymbolField.setRequiredIndicatorVisible(true);
+        player1SymbolField.setPattern("\\S");
+        player1SymbolField.setI18n(new TextField.TextFieldI18n().setRequiredErrorMessage("Player 1 symbol is " +
+                "required!").setPatternErrorMessage("Invalid input"));
         player1SymbolField.setPlaceholder("Enter player 1 symbol... (e.g., X)");
-        player1SymbolField.setValue("X");
+        player1SymbolField.setWidth("30%");
+        player1SymbolField.setClearButtonVisible(true);
 
         TextField player2SymbolField = new TextField("Second Player Symbol (e.g., O)");
-        player2SymbolField.setRequired(true);
+        player2SymbolField.setRequiredIndicatorVisible(true);
+        player2SymbolField.setPattern("\\S");
+        player2SymbolField.setI18n(new TextField.TextFieldI18n().setRequiredErrorMessage("Player 2 symbol is " +
+                "required!").setPatternErrorMessage("Invalid input"));
         player2SymbolField.setPlaceholder("Enter player 2 symbol... (e.g., O)");
-        player2SymbolField.setValue("O");
+        player2SymbolField.setWidth("30%");
+        player2SymbolField.setClearButtonVisible(true);
 
         Checkbox singlePlayerCheckbox = new Checkbox("Single Player Mode (vs Computer)");
         singlePlayerCheckbox.setValue(true);
 
         Button startGameButton = new Button("Start Game", click -> {
             try {
-                int boardSize = Integer.parseInt(boardSizeField.getValue());
-                int winStreak = Integer.parseInt(winStreakField.getValue());
+                if (boardSizeField.getValue() == null || winStreakField.getValue() == null) {
+                    Notification.show("Board Size or Win Streak cannot be empty.");
+                    return;
+                }
+
+                int boardSize = boardSizeField.getValue();
+                int winStreak = winStreakField.getValue();
                 String player1Symbol = player1SymbolField.getValue();
                 String player2Symbol = player2SymbolField.getValue();
                 boolean isSinglePlayer = singlePlayerCheckbox.getValue();
@@ -55,7 +75,7 @@ public class GameConfigView extends VerticalLayout {
                 }
 
                 if (player1Symbol.equals(player2Symbol)) {
-                    Notification.show("Player 1 and Player 2 symbols must be different!");
+                    Notification.show("Player 1 and Player 2 symbols must be different and cannot be empty!");
                     return;
                 }
 

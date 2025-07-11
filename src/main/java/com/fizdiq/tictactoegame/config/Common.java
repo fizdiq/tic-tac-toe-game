@@ -3,6 +3,8 @@ package com.fizdiq.tictactoegame.config;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -51,4 +53,8 @@ public class Common {
         return elapsedTime;
     }
 
+    public static String formatDateTime(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return dateTime.format(formatter);
+    }
 }

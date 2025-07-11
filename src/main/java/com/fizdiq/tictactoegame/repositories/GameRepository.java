@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
-    @Query("select g from Game g order by g.isGameOver, g.id desc")
+    @Query("select g from Game g order by g.isGameOver, g.updatedDate desc")
     List<Game> findByOrderByIsGameOverAscIdAsc();
 }

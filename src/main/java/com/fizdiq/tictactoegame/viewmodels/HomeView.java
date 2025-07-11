@@ -1,5 +1,6 @@
 package com.fizdiq.tictactoegame.viewmodels;
 
+import com.fizdiq.tictactoegame.config.Common;
 import com.fizdiq.tictactoegame.model.Game;
 import com.fizdiq.tictactoegame.services.TicTacToeService;
 import com.vaadin.flow.component.Text;
@@ -40,9 +41,15 @@ public class HomeView extends VerticalLayout implements BeforeEnterObserver {
         newGameButton.getStyle().set("margin-bottom", "20px");
 
         gamesGrid = new Grid<>(Game.class, false);
-        gamesGrid.addColumn(Game::getId).setHeader("Game ID");
-        gamesGrid.addColumn(Game::getBoardSize).setHeader("Board Size");
-        gamesGrid.addColumn(Game::getWinStreak).setHeader("Win Streak");
+        gamesGrid.addColumn(Game::getId).setHeader("Game ID").setAutoWidth(true).setResizable(false);
+        gamesGrid.addColumn(Game::getBoardSize)
+                .setHeader("Board Size")
+                .setAutoWidth(true)
+                .setResizable(false);
+        gamesGrid.addColumn(Game::getWinStreak)
+                .setHeader("Win Streak")
+                .setAutoWidth(true)
+                .setResizable(false);
         gamesGrid.addComponentColumn(game -> {
                     Icon icon;
                     if (game.isSinglePlayer()) {
@@ -55,7 +62,7 @@ public class HomeView extends VerticalLayout implements BeforeEnterObserver {
                     return icon;
                 })
                 .setTooltipGenerator(game -> game.isSinglePlayer() ? "Single Player Mode" : "Multiplayer Mode")
-                .setHeader("Mode");
+                .setHeader("Mode").setAutoWidth(true).setResizable(false);
         gamesGrid.addComponentColumn(game -> {
             Div container = new Div();
             Text text;
@@ -69,13 +76,28 @@ public class HomeView extends VerticalLayout implements BeforeEnterObserver {
             container.getElement().getStyle().set("font-weight", "bold");
             container.add(text);
             return container;
-        }).setHeader("Game Status");
-        gamesGrid.addColumn(Game::getPlayer1Symbol).setHeader("Player 1 Symbol");
-        gamesGrid.addColumn(Game::getPlayer2Symbol).setHeader("Player 2 Symbol");
+        }).setHeader("Game Status").setAutoWidth(true).setResizable(false);
+        gamesGrid.addColumn(Game::getPlayer1Symbol)
+                .setHeader("Player 1 Symbol")
+                .setAutoWidth(true)
+                .setResizable(false);
+        gamesGrid.addColumn(Game::getPlayer2Symbol)
+                .setHeader("Player 2 Symbol")
+                .setAutoWidth(true)
+                .setResizable(false);
         gamesGrid.addColumn(game -> {
             String winner = game.getWinner();
             return (game.isGameOver() && winner != null) ? winner : "N/A";
-        }).setHeader("Winner");
+        }).setHeader("Winner").setAutoWidth(true).setResizable(false);
+        gamesGrid.addColumn(game -> Common.formatDateTime(game.getCreatedDate()))
+                .setHeader("Created Date")
+                .setAutoWidth(true)
+                .setResizable(false);
+        gamesGrid.addColumn(game -> Common.formatDateTime(game.getUpdatedDate()))
+                .setHeader("Updated Date")
+                .setAutoWidth(true)
+                .setResizable(false);
+        gamesGrid.setEmptyStateText("No games found. Start a new game to see it here");
 
         Div gridContainer = new Div(gamesGrid);
         gridContainer.setWidth("80%");
